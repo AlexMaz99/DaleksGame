@@ -3,6 +3,7 @@ package pl.edu.agh.ki.to.theoffice.domain.map;
 import javafx.scene.input.KeyCode;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -33,6 +34,18 @@ public class LocationTest {
 
         // then
         assertEquals(new Location(2, 6), resultLocation);
+    }
+
+    @Test
+    public void testSubtractTwoLocations() {
+        // given
+        Location location = new Location(6, 7);
+
+        // when
+        Location resultLocation = location.subtract(2, 1);
+
+        // then
+        assertEquals(new Location(4, 6), resultLocation);
     }
 
     @Test
@@ -192,8 +205,8 @@ public class LocationTest {
         assertThat(locations).contains(new Location(0, 0));
         assertThat(locations).doesNotContain(new Location(20, 20));
         assertThat(locations.get(0)).isEqualTo(new Location(0, 19));
-        assertThat(locations).doesNotContain(new Location(21,0));
-        assertThat(locations).doesNotContain(new Location(0,21));
+        assertThat(locations).doesNotContain(new Location(21, 0));
+        assertThat(locations).doesNotContain(new Location(0, 21));
     }
 
     @Test
@@ -222,7 +235,7 @@ public class LocationTest {
     }
 
     @Test
-    public void testFromKeyCodeNorth(){
+    public void testFromKeyCodeNorth() {
         // given
         KeyCode keyCode = KeyCode.NUMPAD8;
 
@@ -234,7 +247,7 @@ public class LocationTest {
     }
 
     @Test
-    public void testFromKeyCodeSouth(){
+    public void testFromKeyCodeSouth() {
         // given
         KeyCode keyCode = KeyCode.NUMPAD2;
 
@@ -246,7 +259,7 @@ public class LocationTest {
     }
 
     @Test
-    public void testFromKeyCodeWest(){
+    public void testFromKeyCodeWest() {
         // given
         KeyCode keyCode = KeyCode.NUMPAD4;
 
@@ -258,7 +271,7 @@ public class LocationTest {
     }
 
     @Test
-    public void testFromKeyCodeEast(){
+    public void testFromKeyCodeEast() {
         // given
         KeyCode keyCode = KeyCode.NUMPAD6;
 
@@ -270,7 +283,7 @@ public class LocationTest {
     }
 
     @Test
-    public void testFromKeyCodeNorthEast(){
+    public void testFromKeyCodeNorthEast() {
         // given
         KeyCode keyCode = KeyCode.NUMPAD9;
 
@@ -282,7 +295,7 @@ public class LocationTest {
     }
 
     @Test
-    public void testFromKeyCodeNorthWest(){
+    public void testFromKeyCodeNorthWest() {
         // given
         KeyCode keyCode = KeyCode.NUMPAD7;
 
@@ -294,7 +307,7 @@ public class LocationTest {
     }
 
     @Test
-    public void testFromKeyCodeSouthEast(){
+    public void testFromKeyCodeSouthEast() {
         // given
         KeyCode keyCode = KeyCode.NUMPAD3;
 
@@ -306,7 +319,7 @@ public class LocationTest {
     }
 
     @Test
-    public void testFromKeyCodeSouthWest(){
+    public void testFromKeyCodeSouthWest() {
         // given
         KeyCode keyCode = KeyCode.NUMPAD1;
 
@@ -318,7 +331,7 @@ public class LocationTest {
     }
 
     @Test
-    public void testFromKeyCodeNone(){
+    public void testFromKeyCodeNone() {
         // given
         KeyCode keyCode = KeyCode.NUMPAD5;
 
@@ -330,7 +343,7 @@ public class LocationTest {
     }
 
     @Test
-    public void testFromKeyCodeWhenIllegal(){
+    public void testFromKeyCodeWhenIllegal() {
         // given
         KeyCode keyCode = KeyCode.BACK_SPACE;
 
@@ -339,6 +352,26 @@ public class LocationTest {
 
         // then
         assertEquals(Optional.empty(), direction);
+    }
+
+    @Test
+    public void testNeighbouringLocations() {
+        // given
+        Location location = new Location(4, 5);
+        List<Location> neighbouringLocations = Location.generateNeighbouringLocations(location);
+
+        // when then
+        neighbouringLocations.forEach(neighbouringLocation -> assertTrue(Location.neighbouringLocations(location, neighbouringLocation)));
+    }
+
+    @Test
+    public void testNotNeighbouringLocations() {
+        // given
+        Location location = new Location(4, 5);
+        Location notNeighbouringLocation = new Location(6, 8);
+
+        // when then
+        assertFalse(Location.neighbouringLocations(location, notNeighbouringLocation));
     }
 
 }

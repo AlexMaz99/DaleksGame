@@ -8,14 +8,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class GamePropertiesTest {
 
     @Test
-    public void testGamePlayerProperties(){
+    public void testGameProperties() {
         // given
 
         // when
-        GameProperties.GamePlayerProperties gamePlayerProperties = GameProperties.GamePlayerProperties.builder().build();
+        GameProperties gameProperties = GameProperties.builder().build();
 
         // then
-        assertEquals(0, gamePlayerProperties.getLives());
-        assertEquals(GamePowerup.toMapWithDefaultValues(), gamePlayerProperties.getPowerups());
+        assertEquals(0, gameProperties.getLives());
+        assertEquals(0, gameProperties.getEnemies());
+        assertEquals(GamePowerup.toMapWithDefaultValues(), gameProperties.getPowerups());
     }
 }

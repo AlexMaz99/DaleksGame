@@ -4,29 +4,32 @@ import org.junit.jupiter.api.Test;
 import pl.edu.agh.ki.to.theoffice.domain.entity.GamePowerup;
 import pl.edu.agh.ki.to.theoffice.domain.game.properties.GameProperties;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 class PlayerEntityTest {
 
     @Test
     void testFromProperties() {
         // given
-        GameProperties.GamePlayerProperties gamePlayerProperties = GameProperties.GamePlayerProperties.builder().build();
+        GameProperties gameProperties = mock(GameProperties.class);
+        given(gameProperties.getLives()).willReturn(2);
 
         // when
-        PlayerEntity playerEntity = PlayerEntity.fromProperties(gamePlayerProperties);
+        PlayerEntity playerEntity = PlayerEntity.fromProperties(gameProperties);
 
         // then
-        assertEquals(gamePlayerProperties.getLives(), playerEntity.getLives().get());
-        assertEquals(gamePlayerProperties.getPowerups(), playerEntity.getPowerups());
+        assertEquals(gameProperties.getLives(), playerEntity.getLives().get());
+        assertEquals(GamePowerup.toMapWithDefaultValues(), playerEntity.getPowerups());
     }
 
     @Test
     void testAddPowerup() {
         // given
-        GameProperties.GamePlayerProperties gamePlayerProperties = GameProperties.GamePlayerProperties.builder().build();
-        PlayerEntity playerEntity = PlayerEntity.fromProperties(gamePlayerProperties);
+        GameProperties gameProperties = mock(GameProperties.class);
+        given(gameProperties.getLives()).willReturn(2);
+        PlayerEntity playerEntity = PlayerEntity.fromProperties(gameProperties);
 
         // when
         playerEntity.addPowerup(GamePowerup.BOMB);
@@ -39,8 +42,9 @@ class PlayerEntityTest {
     @Test
     void testRemovePowerup() {
         // given
-        GameProperties.GamePlayerProperties gamePlayerProperties = GameProperties.GamePlayerProperties.builder().build();
-        PlayerEntity playerEntity = PlayerEntity.fromProperties(gamePlayerProperties);
+        GameProperties gameProperties = mock(GameProperties.class);
+        given(gameProperties.getLives()).willReturn(2);
+        PlayerEntity playerEntity = PlayerEntity.fromProperties(gameProperties);
         playerEntity.addPowerup(GamePowerup.BOMB);
 
         // when
@@ -52,29 +56,54 @@ class PlayerEntityTest {
     }
 
     @Test
+    void testCantUsePowerup() {
+        // given
+        GameProperties gameProperties = mock(GameProperties.class);
+        given(gameProperties.getLives()).willReturn(2);
+        PlayerEntity playerEntity = PlayerEntity.fromProperties(gameProperties);
+
+        // when then
+        assertFalse(playerEntity.canUsePowerup(GamePowerup.BOMB));
+        assertFalse(playerEntity.canUsePowerup(GamePowerup.TELEPORT));
+    }
+
+    @Test
+    void testCanUsePowerup() {
+        // given
+        GameProperties gameProperties = mock(GameProperties.class);
+        given(gameProperties.getLives()).willReturn(2);
+        PlayerEntity playerEntity = PlayerEntity.fromProperties(gameProperties);
+        playerEntity.addPowerup(GamePowerup.BOMB);
+
+        // when then
+        assertTrue(playerEntity.canUsePowerup(GamePowerup.BOMB));
+    }
+
+    @Test
     void testAddLife() {
         // given
-        GameProperties.GamePlayerProperties gamePlayerProperties = GameProperties.GamePlayerProperties.builder().build();
-        PlayerEntity playerEntity = PlayerEntity.fromProperties(gamePlayerProperties);
+        GameProperties gameProperties = mock(GameProperties.class);
+        given(gameProperties.getLives()).willReturn(2);
+        PlayerEntity playerEntity = PlayerEntity.fromProperties(gameProperties);
 
         // when
         playerEntity.addLife();
 
         // then
-        assertEquals(1, playerEntity.getLives().get());
+        assertEquals(gameProperties.getLives() + 1, playerEntity.getLives().get());
     }
 
     @Test
     void testRemoveLife() {
         // given
-        GameProperties.GamePlayerProperties gamePlayerProperties = GameProperties.GamePlayerProperties.builder().build();
-        PlayerEntity playerEntity = PlayerEntity.fromProperties(gamePlayerProperties);
-        playerEntity.addLife();
+        GameProperties gameProperties = mock(GameProperties.class);
+        given(gameProperties.getLives()).willReturn(2);
+        PlayerEntity playerEntity = PlayerEntity.fromProperties(gameProperties);
 
         // when
         playerEntity.removeLife();
 
         // then
-        assertEquals(0, playerEntity.getLives().get());
+        assertEquals(gameProperties.getLives() - 1, playerEntity.getLives().get());
     }
 }

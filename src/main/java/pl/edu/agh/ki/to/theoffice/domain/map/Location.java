@@ -7,10 +7,11 @@ import pl.edu.agh.ki.to.theoffice.common.formatter.UnityFormatter;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import static pl.edu.agh.ki.to.theoffice.domain.utils.RandomProvider.randomNextInt;
 
 @Getter
 @ToString
@@ -18,27 +19,17 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class Location {
 
-    private static final Random r = new Random();
-
     private final int x;
     private final int y;
 
-    public Location add(int x, int y) {
-        return new Location(this.x + x, this.y + y);
-    }
-
-    public Location add(Direction direction) {
-        return new Location(this.x + direction.dx, this.y + direction.dy);
-    }
-
     public static Location randomLocation(int maxX, int maxY) {
         return new Location(
-                r.nextInt(maxX),
-                r.nextInt(maxY)
+                randomNextInt(maxX),
+                randomNextInt(maxY)
         );
     }
 
-    public static List<Location> generateNeighbouringLocations(Location location){
+    public static List<Location> generateNeighbouringLocations(Location location) {
         return Stream.of(Direction.values())
                 .map(location::add)
                 .collect(Collectors.toList());
@@ -52,6 +43,24 @@ public class Location {
                         .collect(Collectors.toList()))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
+    }
+
+    public static boolean neighbouringLocations(Location firstLocation, Location secondLocation) {
+        Location differenceLocation = firstLocation.subtract(secondLocation.x, secondLocation.y);
+        return Stream.of(Direction.values())
+                .anyMatch(d -> d.dx == differenceLocation.x && d.dy == differenceLocation.y);
+    }
+
+    public Location add(int x, int y) {
+        return new Location(this.x + x, this.y + y);
+    }
+
+    public Location add(Direction direction) {
+        return new Location(this.x + direction.dx, this.y + direction.dy);
+    }
+
+    public Location subtract(int x, int y) {
+        return new Location(this.x - x, this.y - y);
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

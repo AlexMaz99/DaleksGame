@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import pl.edu.agh.ki.to.theoffice.domain.entity.EntityType;
@@ -15,11 +16,15 @@ import pl.edu.agh.ki.to.theoffice.domain.map.Location;
 
 @Slf4j
 @Getter
+@Setter
 @ToString(callSuper = true)
 @NoArgsConstructor
 public class PlayerEntity extends MovableEntity {
 
-    public static PlayerEntity fromProperties(GameProperties.GamePlayerProperties properties) {
+    private ObservableMap<GamePowerup, Integer> powerups;
+    private IntegerProperty lives;
+
+    public static PlayerEntity fromProperties(GameProperties properties) {
         final PlayerEntity playerEntity = new PlayerEntity();
 
         playerEntity.powerups = FXCollections.observableHashMap();
@@ -30,9 +35,6 @@ public class PlayerEntity extends MovableEntity {
         return playerEntity;
     }
 
-    private ObservableMap<GamePowerup, Integer> powerups;
-    private IntegerProperty lives;
-
     public void addPowerup(GamePowerup powerup) {
         log.debug("Added powerup to player inventory: {}", powerup.name());
         this.powerups.compute(powerup, (k, v) -> v += 1);
@@ -40,6 +42,10 @@ public class PlayerEntity extends MovableEntity {
 
     public void removePowerup(GamePowerup powerup) {
         this.powerups.compute(powerup, (k, v) -> v -= 1);
+    }
+
+    public boolean canUsePowerup(GamePowerup powerup) {
+        return this.powerups.get(powerup) > 0;
     }
 
     public void addLife() {
@@ -69,4 +75,5 @@ public class PlayerEntity extends MovableEntity {
                 EntityType.PLAYER :
                 EntityType.DEAD_PLAYER;
     }
+
 }
